@@ -21,10 +21,20 @@ function point_in_rectangle(point,xywh)
 end
 
 function draw_grid()
-
+  
+  local width, height
+  width = love.graphics.getWidth()
+  height = love.graphics.getHeight()
+  
+  if width < height then
+    side = width/size
+  else
+    side = height/size
+  end
+  
   local x_offset, y_offset
-  x_offset = love.graphics.getWidth()/2 - size*side/2
-  y_offset = love.graphics.getHeight()/2 - size*side/2
+  x_offset = width/2 - size*side/2
+  y_offset = height/2 - size*side/2
   
   love.graphics.push()
   love.graphics.translate(x_offset, y_offset)
