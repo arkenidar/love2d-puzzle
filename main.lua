@@ -9,7 +9,7 @@ function love.load()
    {7,8,0},
   }
   side = 50
-  --love.window.setMode(size*side,size*side)
+  love.window.setMode(size*side,size*side)
 end
 
 function point_in_rectangle(point,xywh)
@@ -23,8 +23,8 @@ end
 function draw_grid()
 
   local x_offset, y_offset
-  x_offset = 100
-  y_offset = 50
+  x_offset = love.graphics.getWidth()/2 - size*side/2
+  y_offset = love.graphics.getHeight()/2 - size*side/2
   
   love.graphics.push()
   love.graphics.translate(x_offset, y_offset)
