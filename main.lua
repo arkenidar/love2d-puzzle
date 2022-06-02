@@ -86,6 +86,7 @@ function love.draw()
         local x,y
         x = rx + center - font_width/2
         y = ry + center - font_height/2
+        love.graphics.setColor(1,1,1) -- white
         love.graphics.print(element, x , y)
       end
       
