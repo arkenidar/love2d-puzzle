@@ -1,13 +1,42 @@
 
--- 8 puzzle
+-- 8 puzzle (for size=3 )
+
+function table_grid_sorted()
+  local table_grid = {}
+  
+  for row_id = 1,size do
+  
+    local row = {}
+    for column_id = 1,size do
+      local number
+      number = column_id + (row_id-1)*size
+      if row_id==size and column_id==size then
+        number = 0
+      end
+      table.insert(row, number)
+    end
+    table.insert(table_grid, row)
+  
+  end
+  
+  return table_grid
+end
 
 function love.load()
-  size = 3
+  
+  love.window.setTitle("puzzle")
+  
+  size = 5
+  
+  --[[
   table_grid={
    {1,2,3},
    {4,5,6},
    {7,8,0},
   }
+  ]]
+  table_grid = table_grid_sorted()
+  
   side = 50
   love.window.setMode(size*side,size*side)
   
