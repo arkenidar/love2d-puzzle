@@ -22,6 +22,8 @@ end
 
 function draw_grid()
   
+  local font = love.graphics.getFont()
+  
   local width, height
   width = love.graphics.getWidth()
   height = love.graphics.getHeight()
@@ -30,6 +32,16 @@ function draw_grid()
     side = width/size
   else
     side = height/size
+  end
+  
+  local font_height = font:getHeight()
+  local font_width = font:getWidth(tostring(size*size)) -- max
+  
+  local font_scale
+  if font_width > font_height then
+    font_scale = side/font_width
+  else
+    font_scale = side/font_height
   end
   
   local x_offset, y_offset
@@ -106,14 +118,14 @@ function draw_grid()
       -- draw square content
       if element > 0 then
         local center = side/2
-        local font = love.graphics.getFont()
+        
         local font_height = font:getHeight()
         local font_width = font:getWidth(tostring(element))
         local x,y
-        x = rx + center - font_width/2
-        y = ry + center - font_height/2
+        x = rx + center - (font_width*font_scale)/2 -- scaled font size
+        y = ry + center - (font_height*font_scale)/2
         love.graphics.setColor(1,1,1) -- white
-        love.graphics.print(element, x , y)
+        love.graphics.print(element, x , y , 0 , font_scale , font_scale ) -- uniform scaling
       end
       
     end -- end for/row
