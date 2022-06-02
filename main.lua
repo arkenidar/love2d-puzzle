@@ -9,7 +9,7 @@ function love.load()
    {7,8,0},
   }
   side = 50
-  love.window.setMode(size*side,size*side)
+  --love.window.setMode(size*side,size*side)
 end
 
 function point_in_rectangle(point,xywh)
@@ -21,6 +21,13 @@ function point_in_rectangle(point,xywh)
 end
 
 function draw_grid()
+
+  local x_offset, y_offset
+  x_offset = 100
+  y_offset = 50
+  
+  love.graphics.push()
+  love.graphics.translate(x_offset, y_offset)
 
   for row_id , row in pairs(table_grid) do
     for column_id , element in pairs(row) do
@@ -34,6 +41,9 @@ function draw_grid()
       ry = y_id*side
       
       local mx , my = love.mouse.getPosition()
+      mx = mx - x_offset
+      my = my - y_offset
+      
       local square = {rx,ry,side,side}
       local inside = point_in_rectangle({mx,my} , square )
     
@@ -98,6 +108,8 @@ function draw_grid()
       
     end -- end for/row
   end -- end for/table
+  
+  love.graphics.pop()
   
 end
 
