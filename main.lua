@@ -24,6 +24,7 @@ function love.draw()
 
   for row_id , row in pairs(table_grid) do
     for column_id , element in pairs(row) do
+      
       local x_id , y_id
       x_id = column_id - 1
       y_id = row_id - 1
@@ -43,6 +44,7 @@ function love.draw()
         table_grid[row_id_2][column_id_2] = temporary
       end
     
+      -- action when click/touch inside the square
       if inside and love.mouse.isDown(1) then
 
         -- left
@@ -67,10 +69,13 @@ function love.draw()
         
       end
       
+      -- drawing
       
+      -- draw square
       love.graphics.setColor(0,0,0) -- black
       love.graphics.rectangle("fill", square[1], square[2], square[3], square[4])
       
+      -- draw square line
       if inside then
         love.graphics.setColor(1,0,0) -- red
       else
@@ -78,6 +83,7 @@ function love.draw()
       end
       love.graphics.rectangle("line", square[1]+1, square[2]+1, square[3]-2, square[4]-2)
       
+      -- draw square content
       if element > 0 then
         local center = side/2
         local font = love.graphics.getFont()
