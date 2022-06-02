@@ -10,6 +10,15 @@ function love.load()
   }
   side = 50
   love.window.setMode(size*side,size*side)
+  
+  local font = love.graphics.getFont()
+  font_width_max = 0
+  for number = 1 , size*size-1 do -- whole range
+    local font_width = font:getWidth(tostring(number))
+    if font_width > font_width_max then
+      font_width_max = font_width
+    end
+  end
 end
 
 function point_in_rectangle(point,xywh)
@@ -34,8 +43,8 @@ function draw_grid()
     side = height/size
   end
   
-  local font_height = font:getHeight()
-  local font_width = font:getWidth(tostring(size*size)) -- max
+  local font_height = font:getHeight() -- same height
+  local font_width = font_width_max -- maximum width
   
   local font_scale
   if font_width > font_height then
