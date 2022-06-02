@@ -20,7 +20,7 @@ function point_in_rectangle(point,xywh)
     point[2]<=(xywh[2]+xywh[4])
 end
 
-function love.draw()
+function draw_grid()
 
   for row_id , row in pairs(table_grid) do
     for column_id , element in pairs(row) do
@@ -99,4 +99,8 @@ function love.draw()
     end -- end for/row
   end -- end for/table
   
+end
+
+function love.draw()
+  draw_grid()
 end
