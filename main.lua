@@ -76,10 +76,11 @@ function draw_grid()
   local font_width = font_width_max -- maximum width
   
   local font_scale
+  local spacing = 0.6
   if font_width > font_height then
-    font_scale = side/font_width
+    font_scale = (side*spacing)/font_width
   else
-    font_scale = side/font_height
+    font_scale = (side*spacing)/font_height
   end
   
   local x_offset, y_offset
