@@ -27,10 +27,17 @@ end
 
 function table_grid_shuffled()
   
+  -- starts from 1: empty square is the last
+  -- starts from 0: empty square is randomly placed
+  local start_from = 1
+  
   local numbers_to_insert = {}
-  for number = 1,size*size-1 do
+  for number = start_from,size*size-1 do
     table.insert(numbers_to_insert, number)
   end
+  
+  -- initialize the pseudo random number generator
+  math.randomseed( os.time() )
   
   local table_grid = {}
   
@@ -69,7 +76,7 @@ function love.load()
   table_grid = table_grid_shuffled() -- table_grid_sorted() -- initial
   table_grid_end_game = table_grid_sorted()
   
-  side = 50
+  side = 100 -- applies when "windowed" in Desktop systems
   love.window.setMode(size*side,size*side)
   
   local font = love.graphics.getFont()
