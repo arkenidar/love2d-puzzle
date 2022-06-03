@@ -60,20 +60,9 @@ function table_grid_shuffled()
   return table_grid
 end
 
-function love.load()
-  
-  love.window.setTitle("puzzle")
-  
-  size = 3 -- initial
-  
-  --[[
-  table_grid={
-   {1,2,3},
-   {4,5,6},
-   {7,8,0},
-  }
-  ]]
-  table_grid = table_grid_shuffled() -- table_grid_sorted() -- initial
+function size_set(size)
+
+  table_grid = table_grid_shuffled() -- initial
   table_grid_end_game = table_grid_sorted()
   
   side = 100 -- applies when "windowed" in Desktop systems
@@ -83,13 +72,15 @@ function love.load()
   font_width_max = 0
   for number = 1 , size*size-1 do -- whole range
     local font_width = font:getWidth(tostring(number))
-    --[[
-    if font_width > font_width_max then
-      font_width_max = font_width
-    end
-    --]]
+
     font_width_max = math.max(font_width, font_width_max)
   end
+end
+
+function love.load()
+  love.window.setTitle("puzzle")
+  size = 3 -- initial
+  size_set(size)
 end
 
 function point_in_rectangle(point,xywh)
