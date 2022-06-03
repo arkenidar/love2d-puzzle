@@ -9,10 +9,41 @@ function table_grid_sorted()
     local row = {}
     for column_id = 1,size do
       local number
+      
+      -- sorted number
       number = column_id + (row_id-1)*size
       if row_id==size and column_id==size then
         number = 0
       end
+      
+      table.insert(row, number)
+    end
+    table.insert(table_grid, row)
+  
+  end
+  
+  return table_grid
+end
+
+function table_grid_shuffled()
+  
+  local numbers_to_insert = {}
+  for number = 1,size*size-1 do
+    table.insert(numbers_to_insert, number)
+  end
+  
+  local table_grid = {}
+  
+  for row_id = 1,size do
+  
+    local row = {}
+    for column_id = 1,size do
+      local number
+      
+      -- shuffled number
+      number = table.remove(numbers_to_insert, math.random(1, #numbers_to_insert) )
+      if number==nil then number=0 end
+      
       table.insert(row, number)
     end
     table.insert(table_grid, row)
@@ -26,7 +57,7 @@ function love.load()
   
   love.window.setTitle("puzzle")
   
-  size = 5
+  size = 3 -- initial
   
   --[[
   table_grid={
@@ -35,7 +66,8 @@ function love.load()
    {7,8,0},
   }
   ]]
-  table_grid = table_grid_sorted()
+  table_grid = table_grid_shuffled() -- table_grid_sorted() -- initial
+  table_grid_end_game = table_grid_sorted()
   
   side = 50
   love.window.setMode(size*side,size*side)
