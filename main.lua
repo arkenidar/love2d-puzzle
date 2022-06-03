@@ -105,22 +105,28 @@ function draw_grid()
   width = love.graphics.getWidth()
   height = love.graphics.getHeight()
   
+  --[[
   if width < height then
     side = width/size
   else
     side = height/size
   end
+  --]]
+  side = math.min(width,height)/size
   
   local font_height = font:getHeight() -- same height
   local font_width = font_width_max -- maximum width
   
   local font_scale
   local spacing = 0.6
+  --[[
   if font_width > font_height then
     font_scale = (side*spacing)/font_width
   else
     font_scale = (side*spacing)/font_height
   end
+  --]]
+  font_scale = (side*spacing)/math.max(font_width,font_height)
   
   local x_offset, y_offset
   x_offset = width/2 - size*side/2
