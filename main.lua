@@ -64,7 +64,7 @@ function size_set(size_to_set)
   
   size = size_to_set
   
-  table_grid = table_grid_shuffled() -- initial
+  table_grid = table_grid_shuffled() -- initial (shuffled)
   table_grid_end_game = table_grid_sorted()
   
   side = 100 -- applies when "windowed" in Desktop systems
@@ -77,6 +77,20 @@ function size_set(size_to_set)
 
     font_width_max = math.max(font_width, font_width_max)
   end
+end
+
+function table_grid_same(grid1, grid2)
+  
+  for row_id = 1,size do
+    for column_id = 1,size do
+      if not (grid1[row_id][column_id] == grid2[row_id][column_id]) then
+        return false
+      end
+    end
+  end
+  
+  return true
+
 end
 
 function love.load()
@@ -141,6 +155,13 @@ function draw_grid()
         temporary = table_grid[row_id][column_id]
         table_grid[row_id][column_id] = table_grid[row_id_2][column_id_2]
         table_grid[row_id_2][column_id_2] = temporary
+        
+        -- after swap
+        if table_grid_same(table_grid, table_grid_end_game) then
+          -- next level
+          size_set(size+1) -- increase
+        end
+      
       end
     
       -- action when click/touch inside the square
