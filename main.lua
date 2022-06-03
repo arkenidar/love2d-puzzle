@@ -60,8 +60,10 @@ function table_grid_shuffled()
   return table_grid
 end
 
-function size_set(size)
-
+function size_set(size_to_set)
+  
+  size = size_to_set
+  
   table_grid = table_grid_shuffled() -- initial
   table_grid_end_game = table_grid_sorted()
   
@@ -202,4 +204,21 @@ end
 
 function love.draw()
   draw_grid()
+end
+
+function love.keypressed(key)
+  if key == "escape" then
+    love.event.quit()
+  end
+
+  if key == "+" then
+    size_set( size + 1) -- increase
+    
+  elseif key == "-" then
+    if (size - 1) >= 3 then
+      
+      size_set( size - 1 ) -- decrease
+    end
+  end
+
 end
