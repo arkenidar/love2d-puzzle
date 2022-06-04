@@ -131,10 +131,21 @@ function table_grid_to_string(grid_to_stringify)
 end
 
 function love.load(arg)
+  
   love.window.setTitle("puzzle")
+  
   if arg[#arg] == "-debug" then require("mobdebug").start() end
+  
   size = 3 -- initial
   size_set(size)
+  
+  clicked = false -- initially
+end
+
+function love.mousepressed()
+  clicked = true -- when click/touch
+  
+  -- "clicked = false" after love.draw()
 end
 
 function point_in_rectangle(point,xywh)
@@ -221,7 +232,7 @@ function draw_grid()
       end
     
       -- action when click/touch inside the square
-      local action = inside and love.mouse.isDown(1)
+      local action = inside and clicked
       local empty_square = table_grid[row_id][column_id] == 0
       if action and not empty_square then
 
@@ -290,6 +301,7 @@ end
 
 function love.draw()
   draw_grid()
+  clicked = false -- "clicked = false" after love.draw()
 end
 
 function love.keypressed(key)
