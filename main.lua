@@ -121,7 +121,7 @@ function table_grid_to_string(grid_to_stringify)
   for row_id = 1,size do
     for column_id = 1,size do
       
-      table_grid_stringified = table_grid_stringified..grid_to_stringify[row_id][column_id]
+      table_grid_stringified = table_grid_stringified..grid_to_stringify[row_id][column_id]..","
     
     end
   end
