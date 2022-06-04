@@ -144,6 +144,13 @@ function point_in_rectangle(point,xywh)
     point[2]<=(xywh[2]+xywh[4])
 end
 
+function table_grid_swap(table_grid,row_id,column_id,row_id_2,column_id_2)
+  local temporary
+  temporary = table_grid[row_id][column_id]
+  table_grid[row_id][column_id] = table_grid[row_id_2][column_id_2]
+  table_grid[row_id_2][column_id_2] = temporary
+end
+
 function draw_grid()
   
   local font = love.graphics.getFont()
@@ -188,10 +195,8 @@ function draw_grid()
       local inside = point_in_rectangle({mx,my} , square )
     
       function swap(row_id_2, column_id_2)
-        local temporary
-        temporary = table_grid[row_id][column_id]
-        table_grid[row_id][column_id] = table_grid[row_id_2][column_id_2]
-        table_grid[row_id_2][column_id_2] = temporary
+        
+        table_grid_swap(table_grid,row_id,column_id,row_id_2,column_id_2)
         
         -- after swap
         if table_grid_same(table_grid, table_grid_end_game) then
