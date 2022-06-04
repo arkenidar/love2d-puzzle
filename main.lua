@@ -25,6 +25,27 @@ function table_grid_sorted()
   return table_grid
 end
 
+function table_grid_copy(grid_to_copy)
+  local table_grid = {}
+  
+  for row_id = 1,size do
+  
+    local row = {}
+    for column_id = 1,size do
+      local number
+      
+      -- copied number
+      number = grid_to_copy[row_id][column_id]
+      
+      table.insert(row, number)
+    end
+    table.insert(table_grid, row)
+  
+  end
+  
+  return table_grid
+end
+
 function table_grid_shuffled()
   
   -- starts from 1: empty square is the last
