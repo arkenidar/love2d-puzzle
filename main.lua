@@ -130,8 +130,9 @@ function table_grid_to_string(grid_to_stringify)
 
 end
 
-function love.load()
+function love.load(arg)
   love.window.setTitle("puzzle")
+  if arg[#arg] == "-debug" then require("mobdebug").start() end
   size = 3 -- initial
   size_set(size)
 end
