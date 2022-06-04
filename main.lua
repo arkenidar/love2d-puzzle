@@ -152,6 +152,15 @@ function table_grid_swap(table_grid,row_id,column_id,row_id_2,column_id_2)
   table_grid[row_id_2][column_id_2] = temporary
 end
 
+function ai_solve_step()
+  
+  -- solution search, finds a solution
+  -- TODO: is a "stable solution"? verify
+  
+  -- do one step toward the found solution
+  
+end
+
 function draw_grid()
   
   local font = love.graphics.getFont()
@@ -195,20 +204,26 @@ function draw_grid()
       local square = {rx,ry,side,side}
       local inside = point_in_rectangle({mx,my} , square )
     
+      function after_move()
+        -- (end-game) if solved ...
+        if table_grid_same(table_grid, table_grid_end_game) then
+          -- ... next level
+          size_set(size+1) -- size increase
+        end
+      end
+      
       function swap(row_id_2, column_id_2)
         
         table_grid_swap(table_grid,row_id,column_id,row_id_2,column_id_2)
         
-        -- after swap
-        if table_grid_same(table_grid, table_grid_end_game) then
-          -- next level
-          size_set(size+1) -- increase
-        end
-      
+        after_move()
+        
       end
     
       -- action when click/touch inside the square
-      if inside and love.mouse.isDown(1) then
+      local action = inside and love.mouse.isDown(1)
+      local empty_square = table_grid[row_id][column_id] == 0
+      if action and not empty_square then
 
         -- left
         if column_id > 1 and table_grid[row_id][column_id - 1] == 0 then
@@ -230,6 +245,13 @@ function draw_grid()
           swap(row_id + 1, column_id)
         end
         
+      end
+      
+      if action and empty_square then
+        -- hinting: game A.I. does one step toward solution
+        ai_solve_step()
+        
+        after_move()
       end
       
       -- drawing
