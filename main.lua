@@ -114,6 +114,22 @@ function table_grid_same(grid1, grid2)
 
 end
 
+function table_grid_to_string(grid_to_stringify)
+  
+  local table_grid_stringified = ""
+  
+  for row_id = 1,size do
+    for column_id = 1,size do
+      
+      table_grid_stringified = table_grid_stringified..grid_to_stringify[row_id][column_id]
+    
+    end
+  end
+  
+  return table_grid_stringified
+
+end
+
 function love.load()
   love.window.setTitle("puzzle")
   size = 3 -- initial
