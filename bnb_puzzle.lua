@@ -30,7 +30,7 @@ function swap(grid,row1,column1,row2,column2)
   grid[row1][column1], grid[row2][column2] = grid[row2][column2], grid[row1][column1]
 end
 
-function empty(grid)
+function find_empty(grid)
   for row_id = 1,size do
     for column_id = 1,size do
       if grid[row_id][column_id] == 0 then
@@ -94,84 +94,85 @@ function print_matrix(mat)
   end
 end
 
+function is_safe(row, column)
+  return row >= 1 and row <= size and column >= 1 and column <= size
+end
+
 function solve(initial,final)
 
-local empty_tile_pos = empty( initial )
+  local empty_tile_pos = find_empty( initial )
 
--- Create the root node.
-local cost = calculate_cost(initial, final)
-local root = {
-  parent=nil,
-  mat=initial,
-  empty_tile_pos=empty_tile_pos,
-  cost=cost,
-  level=0
-}
+  -- Create the root node.
+  local cost = calculate_cost(initial, final)
+  local root = {
+    parent=nil,
+    mat=initial,
+    empty_tile_pos=empty_tile_pos,
+    cost=cost,
+    level=0
+  }
 
--- Create a priority queue to store live nodes of search tree.
--- Priority queues implemented as binary heaps.
-local pq = heap.valueheap{cmp = function(a, b)
-  return a.cost < b.cost
-end}
+  -- Create a priority queue to store live nodes of search tree.
+  -- Priority queues implemented as binary heaps.
+  local pq = heap.valueheap{cmp = function(a, b)
+    return a.cost < b.cost
+  end}
 
--- Add root to list of live nodes.
-pq:push(root)
+  -- Add root to list of live nodes.
+  pq:push(root)
 
-while pq:length() > 0 do
+  while pq:length() > 0 do
 
-  -- Find a live node with least estimated cost and delete it form the list of live nodes.
-  local minimum = pq:pop()
+    -- Find a live node with least estimated cost and delete it form the list of live nodes.
+    local minimum = pq:pop()
 
-  -- If minimum is the answer node
-  if minimum.cost == 0 then
-    
-    -- Print path from root node to destination node.
-    function print_path(root)
+    -- If minimum is the answer node
+    if minimum.cost == 0 then
       
-      if root == nil then
-        return
-      end
+      -- Print path from root node to destination node.
+      function print_path(root)
+        
+        if root == nil then
+          return
+        end
+        
+        print_path(root.parent)
+        print_matrix(root.mat)
+        print()
+      end -- function
       
-      print_path(root.parent)
-      print_matrix(root.mat)
-      print()
-    end -- function
-    
-    -- Print the path from root to destination.
-    print_path(minimum)
-    return
-  end -- if
-
-  -- Generate all possible children.
-  for i = 1,4 do
-    
-    -- bottom, left, top, right (parallel arrays)
-    local row = { 1, 0, -1, 0 }
-    local col = { 0, -1, 0, 1 }
-    
-    local new_tile_pos = {
-      minimum.empty_tile_pos[1] + row[i],
-      minimum.empty_tile_pos[2] + col[i] }
-    
-    function is_safe(row, column)
-      return row >= 1 and row <= size and column >= 1 and column <= size
-    end
-    if is_safe(new_tile_pos[1], new_tile_pos[2]) then
-      
-      -- Create a child node.
-      local child = new_node(
-        minimum.mat,
-        minimum.empty_tile_pos,
-        new_tile_pos,
-        minimum.level + 1,
-        minimum,
-        final)
-
-      -- Add child to list of live nodes.
-      pq:push(child)
+      -- Print the path from root to destination.
+      print_path(minimum)
+      return
     end -- if
-  end -- for
-end -- while
+
+    -- Generate all possible children.
+    for i = 1,4 do
+      
+      -- bottom, left, top, right (parallel arrays)
+      local row = { 1,  0, -1, 0 }
+      local col = { 0, -1,  0, 1 }
+      
+      local new_tile_pos = {
+        minimum.empty_tile_pos[1] + row[i],
+        minimum.empty_tile_pos[2] + col[i] }
+      
+      if is_safe(new_tile_pos[1], new_tile_pos[2]) then
+        
+        -- Create a child node.
+        local child = new_node(
+          minimum.mat,
+          minimum.empty_tile_pos,
+          new_tile_pos,
+          minimum.level + 1,
+          minimum,
+          final)
+
+        -- Add child to list of live nodes.
+        pq:push(child)
+      end -- if
+    end -- for
+  end -- while
 
 end -- function
 
@@ -238,15 +239,70 @@ function grid_shuffled()
   return table_grid
 end
 
+function grid_shuffled2(grid)
+  grid=grid_copy(grid)
+  local empty = find_empty(grid)
+
+  -- bottom, left, top, right (parallel arrays)
+  local row = { 1,  0, -1, 0 }
+  local col = { 0, -1,  0, 1 }
+  
+  local iterations = 20
+  math.randomseed( os.time() )
+  while iterations>0 do
+    local dir = math.random(1,4)
+    local new = {
+      row[dir]+empty[1],
+      col[dir]+empty[2],
+      }
+    
+    if is_safe(new[1], new[2]) then
+      swap(grid,empty[1],empty[1],new[1],new[2])
+      -- removed: iterations=iterations-1
+    end
+    iterations=iterations-1 -- warning: iteration can occur without swapping
+  end
+  return grid
+end
+
+function grid_shuffled3(grid)
+  grid=grid_copy(grid)
+  local empty = find_empty(grid)
+
+  -- bottom, left, top, right (parallel arrays)
+  local row = { 1,  0, -1, 0 }
+  local col = { 0, -1,  0, 1 }
+  
+  local iterations = 20
+  math.randomseed( os.time() )
+  while iterations>0 do
+    local safe={}
+    for dir=1,4 do
+      --local dir = math.random(1,4)
+      local new = {
+        row[dir]+empty[1],
+        col[dir]+empty[2],
+        }
+      
+      if is_safe(new[1], new[2]) then
+        table.insert(safe, new)
+      end
+    end
+    local new = safe[math.random(1,#safe)]
+    local empty = find_empty(grid)
+    swap(grid,empty[1],empty[1],new[1],new[2])
+    iterations=iterations-1 -- iterations=iterations-1 after swap (safe swap)
+  end
+  return grid
+end
 
 local final = grid_sorted()
-local initial = grid_shuffled()
----[[
+local initial = grid_shuffled3(final)
+--[[
 initial = { { 1, 2, 3 },
 			{ 5, 6, 0 },
-			{ 7, 8, 4 } }   --]]
-      
----[[
+			{ 7, 8, 4 } }
+
 final = { { 1, 2, 3 },
 		{ 5, 8, 6 },
 		{ 0, 7, 4 } }     --]]
