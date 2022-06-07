@@ -1,5 +1,6 @@
 
 -- 8 puzzle (for size=3 )
+require("bnb_puzzle")
 
 function table_grid_sorted()
   local table_grid = {}
@@ -85,8 +86,33 @@ function size_set(size_to_set)
   
   size = size_to_set
   
-  table_grid = table_grid_shuffled() -- initial (shuffled)
+  --table_grid = table_grid_shuffled() -- initial (shuffled)
   table_grid_end_game = table_grid_sorted()
+  --table_grid = grid_shuffled3(table_grid_end_game) -- initial (shuffled)
+
+
+  while false do -- TODO removed
+    local shuffled = grid_shuffled3(table_grid_end_game) -- initial (shuffled)
+    local path = solve(shuffled, table_grid_end_game)
+    if #path > 3 then
+      table_grid=shuffled
+      break
+    end
+  end
+
+  ---[[
+  table_grid = { -- 5 moves
+    { 1, 2, 3, }, 
+    { 4, 8, 5, }, 
+    { 7, 6, 0, },
+  }
+  
+  table_grid = { -- 9 moves
+    { 1, 2, 3, }, 
+    { 4, 0, 8, }, 
+    { 7, 6, 5, },
+  }
+  --]]
   
   side = 100 -- applies when "windowed" in Desktop systems
   love.window.setMode(size*side,size*side)
@@ -114,25 +140,9 @@ function table_grid_same(grid1, grid2)
 
 end
 
-function table_grid_to_string(grid_to_stringify)
-  
-  local table_grid_stringified = ""
-  
-  for row_id = 1,size do
-    for column_id = 1,size do
-      
-      table_grid_stringified = table_grid_stringified..grid_to_stringify[row_id][column_id]..","
-    
-    end
-  end
-  
-  return table_grid_stringified
-
-end
-
 function love.load(arg)
   
-  love.window.setTitle("puzzle")
+  love.window.setTitle("Puzzle search-game of love, made with Love2D, made of love")
   
   if arg[#arg] == "-debug" then require("mobdebug").start() end
   
@@ -140,6 +150,13 @@ function love.load(arg)
   size_set(size)
   
   clicked = false -- initially
+  
+  --[[
+  table_grid = {
+    {1,2,3},
+    {4,8,5},
+    {7,6,0}
+    }   ]]
 end
 
 function love.mousepressed()
@@ -156,6 +173,10 @@ function point_in_rectangle(point,xywh)
     point[2]<=(xywh[2]+xywh[4])
 end
 
+function table_grid_swap(grid,row1,column1,row2,column2)
+  grid[row1][column1], grid[row2][column2] = grid[row2][column2], grid[row1][column1]
+end
+
 function table_grid_swap(table_grid,row_id,column_id,row_id_2,column_id_2)
   local temporary
   temporary = table_grid[row_id][column_id]
@@ -170,6 +191,129 @@ function ai_solve_step()
   
   -- do one step toward the found solution
   
+end
+
+function solve1()
+  
+
+function table_grid_to_string(grid_to_stringify)
+  
+  local table_grid_stringified = ""
+  
+  for row_id = 1,size do
+    for column_id = 1,size do
+      
+      table_grid_stringified = table_grid_stringified..grid_to_stringify[row_id][column_id]..","
+    
+    end
+  end
+  
+  -- TODO remove this section?
+  local move_string = ""
+  if not ( grid_to_stringify.move_id == nil ) then
+    --move_string = "|"..grid_to_stringify.move_id -- TODO explore (comment/uncomment/research)
+  end
+  
+  local previous_string = ""
+  if not ( grid_to_stringify.previous_grid == nil ) then -- TODO: is needed or superfluous?
+    ---previous_string = "<("..table_grid_to_string(grid_to_stringify.previous_grid)..")"
+  end
+  
+  table_grid_stringified = table_grid_stringified..move_string..previous_string
+  --- print("table:", table_grid_stringified)
+  
+  return table_grid_stringified
+
+end
+
+function get_adjacent_nodes( node )
+  local row_id, column_id = table_grid_empty( node )
+  local adjacent_nodes = {}
+  
+  function possible_move(move_id, row, column)
+    if row >= 1 and row <= size and column >= 1 and column <= size then
+      local new_grid = table_grid_copy( node )
+      
+      table_grid_swap( new_grid, row, column, row_id, column_id )
+      table.insert( adjacent_nodes, new_grid )
+      
+      -- additional. TODO: remove?
+      new_grid.move_id = move_id
+      new_grid.previous_grid = node -- TODO not a copy? same instead
+    end
+  end
+  
+  moves={"down", "up", "right", "left"}
+  possible_move(1, row_id + 1 , column_id)
+  possible_move(2, row_id - 1 , column_id)
+  possible_move(3, row_id, column_id + 1 )
+  possible_move(4, row_id, column_id - 1 )
+  
+  return adjacent_nodes
+  
+end
+
+function table_grid_empty(grid)
+  for row_id = 1,size do
+    for column_id = 1,size do
+      if grid[row_id][column_id] == 0 then
+        return row_id, column_id
+      end
+    end
+  end
+end
+
+function queue_size(queue)
+  local size = 0
+  for _,_ in pairs(queue) do
+    size = size + 1
+  end
+  return size
+end
+
+function queue_to_string(queue)
+  local string = ""
+  for _,queued in pairs(queue) do
+    string = string .. table_grid_to_string( queued ) .. "|"
+  end
+  return string
+end
+  
+function search()
+  local moves_to_solution={}
+  local row_id, column_id = table_grid_empty(table_grid)
+  local node_queue = {}; local visited_nodes = {}
+  function enqueue(grid)
+    table.insert( node_queue, grid )
+    visited_nodes[ table_grid_to_string( grid ) ] = true
+    if table_grid_same( grid, table_grid_end_game) then
+      -- local moves={"down", "up", "right", "left"}
+      print("found!!!", queue_to_string(node_queue), moves[ node_queue[1].move_id ])
+      return "exit"
+    end
+  end
+  if enqueue(table_grid) == "exit" then return end
+  while #node_queue > 0 do
+    for _ , adjacent_node in ipairs( get_adjacent_nodes( table.remove( node_queue, 1 ) ) ) do
+      ---print(adjacent_node.move_id) -- moves=
+      if visited_nodes[ table_grid_to_string( adjacent_node ) ] == nil then
+        if enqueue(table_grid) == "exit" then return end
+      end
+    end
+  end
+  print("found NOT")
+end
+end
+
+function solve2() -- with Branch and Bound (BnB)
+  local initial, final
+  final=table_grid_end_game
+  initial=table_grid
+  ---table_grid = solve(initial, final)[2] --next in path
+  local path = solve(initial, final)
+  local solution = path[2] --next in path
+  if solution == nil then return end
+  table_grid = solution
 end
 
 function draw_grid()
@@ -219,7 +363,15 @@ function draw_grid()
         -- (end-game) if solved ...
         if table_grid_same(table_grid, table_grid_end_game) then
           -- ... next level
-          size_set(size+1) -- size increase
+          ---size_set(size+1) -- size increase TODO
+          
+          --[[
+            table_grid = { -- 5 moves
+              { 1, 2, 3, }, 
+              { 4, 8, 5, }, 
+              { 7, 6, 0, },
+            }
+          --]]
         end
       end
       
@@ -261,7 +413,7 @@ function draw_grid()
       if action and empty_square then
         -- hinting: game A.I. does one step toward solution
         ai_solve_step()
-        
+        --solve2() -- TODO which solve/search?
         after_move()
       end
       
@@ -269,6 +421,11 @@ function draw_grid()
       
       -- draw square
       love.graphics.setColor(0,0,0) -- black
+      if table_grid[row_id][column_id] == table_grid_end_game[row_id][column_id] and
+      not ( table_grid[row_id][column_id] == 0 )
+      then
+        love.graphics.setColor(0,1,0) -- green
+      end
       love.graphics.rectangle("fill", square[1], square[2], square[3], square[4])
       
       -- draw square line
