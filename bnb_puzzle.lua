@@ -26,7 +26,7 @@ function grid_copy(grid_to_copy)
 end
 
 
-function swap(grid,row1,column1,row2,column2)
+function grid_swap(grid,row1,column1,row2,column2)
   grid[row1][column1], grid[row2][column2] = grid[row2][column2], grid[row1][column1]
 end
 
@@ -68,7 +68,7 @@ function new_node(mat, empty_tile_pos, new_empty_tile_pos, level, parent, final)
 	column1 = empty_tile_pos[2]
 	row2 = new_empty_tile_pos[1]
 	column2 = new_empty_tile_pos[2]
-  swap(new_mat,row1,column1,row2,column2)
+  grid_swap(new_mat,row1,column1,row2,column2)
   
   -- Set number of misplaced tiles.
 	local cost = calculate_cost(new_mat, final)
@@ -141,9 +141,26 @@ function solve(initial,final)
         print()
       end -- function
       
+      -- Print path from root node to destination node.
+      local path={}
+      function print_path2(root)
+        
+        if root == nil then
+          return
+        end
+        
+        print_path2(root.parent) -- recurse
+        print_matrix(root.mat)
+        print()
+        
+        table.insert(path,root.mat)
+        
+      end -- function
+      
       -- Print the path from root to destination.
-      print_path(minimum)
-      return
+      print_path2(minimum); print("----------------------------")
+
+      return path
     end -- if
 
     -- Generate all possible children.
@@ -257,7 +274,7 @@ function grid_shuffled2(grid)
       }
     
     if is_safe(new[1], new[2]) then
-      swap(grid,empty[1],empty[1],new[1],new[2])
+      grid_swap(grid,empty[1],empty[1],new[1],new[2])
       -- removed: iterations=iterations-1
     end
     iterations=iterations-1 -- warning: iteration can occur without swapping
@@ -290,7 +307,7 @@ function grid_shuffled3(grid)
     end
     local new = safe[math.random(1,#safe)]
     local empty = find_empty(grid)
-    swap(grid,empty[1],empty[1],new[1],new[2])
+    grid_swap(grid,empty[1],empty[1],new[1],new[2])
     iterations=iterations-1 -- iterations=iterations-1 after swap (safe swap)
   end
   return grid
@@ -298,7 +315,7 @@ end
 
 local final = grid_sorted()
 local initial = grid_shuffled3(final)
---[[
+---[[
 initial = { { 1, 2, 3 },
 			{ 5, 6, 0 },
 			{ 7, 8, 4 } }
@@ -307,5 +324,9 @@ final = { { 1, 2, 3 },
 		{ 5, 8, 6 },
 		{ 0, 7, 4 } }     --]]
     
-solve(initial, final)
+ -- print_matrix( solve(initial, final)[2] ); print("is next")
+
+--solve,grid_shuffled3 = unpack(require("bnb_puzzle")) --import
+--return {solve,grid_shuffled3} --export
+
 
