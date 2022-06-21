@@ -90,17 +90,20 @@ function size_set(size_to_set)
   table_grid_end_game = table_grid_sorted()
   --table_grid = grid_shuffled3(table_grid_end_game) -- initial (shuffled)
 
-
-  while false do -- TODO removed
+--table_grid=grid_shuffled3(final)
+  --table_grid=grid_shuffled3(table_grid_end_game)
+  ---[[
+  while true do -- TODO removed
     local shuffled = grid_shuffled3(table_grid_end_game) -- initial (shuffled)
     local path = solve(shuffled, table_grid_end_game)
-    if #path > 3 then
+    if #path > 0 then -- > 3
       table_grid=shuffled
       break
     end
   end
+  --]]
 
-  ---[[
+  --[[
   table_grid = { -- 5 moves
     { 1, 2, 3, }, 
     { 4, 8, 5, }, 
@@ -190,6 +193,18 @@ function ai_solve_step()
   -- TODO: is a "stable solution"? verify
   
   -- do one step toward the found solution
+  
+  
+  -- TODO which solve/search?
+  
+  -- BFS
+  -- Breadth First Search or BFS for a Graph - GeeksforGeeks
+  -- https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
+  ---solve1()
+  
+  -- solve2() with Branch and Bound (BnB)
+  -- https://www.geeksforgeeks.org/8-puzzle-problem-using-branch-and-bound/
+  solve2() 
   
 end
 
@@ -308,10 +323,14 @@ end
 function solve2() -- with Branch and Bound (BnB)
   local initial, final
   final=table_grid_end_game
+  
   initial=table_grid
+  --initial=grid_shuffled3(final)
+  ------table_grid=grid_shuffled3(final)
+  
   ---table_grid = solve(initial, final)[2] --next in path
   local path = solve(initial, final)
-  local solution = path[2] --next in path
+  local solution = path[2] or path[1] --next in path
   if solution == nil then return end
   table_grid = solution
 end
@@ -363,6 +382,7 @@ function draw_grid()
         -- (end-game) if solved ...
         if table_grid_same(table_grid, table_grid_end_game) then
           -- ... next level
+          size_set(size) -- no size increase
           ---size_set(size+1) -- size increase TODO
           
           --[[

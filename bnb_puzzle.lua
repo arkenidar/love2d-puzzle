@@ -1,3 +1,6 @@
+
+if arg[#arg] == "-debug" then require("mobdebug").start() end
+
 size=3
 
 local heap = require"heap" -- luapower.com/heap -- "heap.lua" file
@@ -100,6 +103,8 @@ end
 
 function solve(initial,final)
 
+  print("solving...")
+  
   local empty_tile_pos = find_empty( initial )
 
   -- Create the root node.
@@ -125,6 +130,9 @@ function solve(initial,final)
 
     -- Find a live node with least estimated cost and delete it form the list of live nodes.
     local minimum = pq:pop()
+    
+    
+    if minimum.level > 20 then return {} end -- debug
 
     -- If minimum is the answer node
     if minimum.cost == 0 then
@@ -189,6 +197,7 @@ function solve(initial,final)
         pq:push(child)
       end -- if
     end -- for
+    
   end -- while
 
 end -- function
@@ -290,24 +299,37 @@ function grid_shuffled3(grid)
   local row = { 1,  0, -1, 0 }
   local col = { 0, -1,  0, 1 }
   
-  local iterations = 20
+  local iterations = 20 --30 too much --5 --2
   math.randomseed( os.time() )
-  while iterations>0 do
+  while iterations>0 do    
     local safe={}
+    
+    print_matrix(grid) -- DEBUG
+    empty = find_empty(grid)
+    print("empty", empty[1],empty[2]) -- DEBUG
+    
     for dir=1,4 do
       --local dir = math.random(1,4)
-      local new = {
+      empty = find_empty(grid)
+      local new_move = {
         row[dir]+empty[1],
         col[dir]+empty[2],
         }
       
-      if is_safe(new[1], new[2]) then
-        table.insert(safe, new)
+      if is_safe(new_move[1], new_move[2]) then
+        table.insert(safe, new_move)
+        print("new_move", new_move[1],new_move[2]) -- DEBUG
       end
     end
     local new = safe[math.random(1,#safe)]
     local empty = find_empty(grid)
-    grid_swap(grid,empty[1],empty[1],new[1],new[2])
+    
+    grid=grid_copy(grid)
+    
+    grid_swap(grid,empty[1],empty[2],new[1],new[2]) ---- !!!!!!!!!!!!!!!
+    
+    print_matrix(grid) ; print() -- DEBUG
+    
     iterations=iterations-1 -- iterations=iterations-1 after swap (safe swap)
   end
   return grid
@@ -315,7 +337,7 @@ end
 
 local final = grid_sorted()
 local initial = grid_shuffled3(final)
----[[
+--[[
 initial = { { 1, 2, 3 },
 			{ 5, 6, 0 },
 			{ 7, 8, 4 } }
@@ -324,7 +346,9 @@ final = { { 1, 2, 3 },
 		{ 5, 8, 6 },
 		{ 0, 7, 4 } }     --]]
     
- -- print_matrix( solve(initial, final)[2] ); print("is next")
+local solution=solve(initial, final)
+print("#solution",#solution)
+print_matrix( solution[2] or solution[1] ); print("is next")
 
 --solve,grid_shuffled3 = unpack(require("bnb_puzzle")) --import
 --return {solve,grid_shuffled3} --export
