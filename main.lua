@@ -382,7 +382,11 @@ function draw_grid()
         -- (end-game) if solved ...
         if table_grid_same(table_grid, table_grid_end_game) then
           -- ... next level
-          size_set(size) -- no size increase
+          print("end game, next level")
+          next_level=true
+          -- ... pause and show completation
+          
+          -------size_set(size) -- no size increase TODO
           ---size_set(size+1) -- size increase TODO
           
           --[[
@@ -474,6 +478,27 @@ function draw_grid()
   
   love.graphics.pop()
   
+end
+
+function love.update()
+  if next_level then
+    next_level = false
+
+    start_time = love.timer.getTime()
+    delay = true
+    print("count-down to next level")
+  end
+  
+  if delay then
+    local current_time = love.timer.getTime()
+    local passed_time = current_time - start_time
+    
+    if passed_time >= 2 then
+      delay = false
+      
+      size_set(size) -- next level
+    end
+  end
 end
 
 function love.draw()
