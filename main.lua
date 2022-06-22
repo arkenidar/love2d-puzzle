@@ -331,7 +331,7 @@ function solve2() -- with Branch and Bound (BnB)
   ---table_grid = solve(initial, final)[2] --next in path
   local path = solve(initial, final)
   local solution = path[2] or path[1] --next in path
-  if solution == nil then return end
+  if solution == nil then print("solution==nil"); return end
   table_grid = solution
 end
 

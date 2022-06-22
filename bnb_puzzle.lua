@@ -132,7 +132,9 @@ function solve(initial,final)
     local minimum = pq:pop()
     
     
-    if minimum.level > 20 then return {} end -- debug
+    if minimum.level > 20 then
+      print("no solution, empty solution (cause: too deep level of search, terminating search)"); return {}
+    end -- debug
 
     -- If minimum is the answer node
     if minimum.cost == 0 then
@@ -346,10 +348,14 @@ final = { { 1, 2, 3 },
 		{ 5, 8, 6 },
 		{ 0, 7, 4 } }     --]]
     
-local solution=solve(initial, final)
-print("#solution",#solution)
-print_matrix( solution[2] or solution[1] ); print("is next")
-
+local path=solve(initial, final)
+print("#path",#path)
+local solution=path[2] or path[1] --next in path
+if solution==nil then
+  print("solution is nil")
+else
+  print_matrix( solution ); print("is next")
+end
 --solve,grid_shuffled3 = unpack(require("bnb_puzzle")) --import
 --return {solve,grid_shuffled3} --export
 
