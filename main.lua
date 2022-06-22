@@ -481,6 +481,8 @@ function draw_grid()
 end
 
 function love.update()
+  if delay then next_level=false end
+  
   if next_level then
     next_level = false
 
